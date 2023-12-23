@@ -17,10 +17,12 @@ const ws = new WebSocket('ws://localhost:8080/ws');
 ws.on('open', () => {
   console.log('Client gestartet');
 
+  // Prompt and set client ID
   rl.question("Client-ID eingeben: ", clientId => {
     setClientId(clientId);
   })
 
+  // Receive and display data (list of all ticket information) from server
   ws.on('message', message => {
     const data = JSON.parse(message.toString());
     displayTickets(data);
@@ -30,7 +32,10 @@ ws.on('open', () => {
 })
 
 const setClientId = (clientId: string) => {
-  ws.send(JSON.stringify({clientId}));
+  ws.send(JSON.stringify({
+    message_type: "set_client_id",
+    client_id: "clientId"
+  }));
 }
 
 const interact = () => {
