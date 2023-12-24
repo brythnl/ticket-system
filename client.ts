@@ -28,7 +28,8 @@ ws.on('open', () => {
   // Receive and display data (list of all ticket information) from server
   ws.on('message', message => {
     const data = JSON.parse(message.toString());
-    displayTickets(data);
+    tickets = data;
+    displayTickets();
   })
 
   interact();
