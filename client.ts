@@ -11,8 +11,7 @@ interface Ticket {
   clientId: string;
 }
 
-let clientId: string;
-let tickets: Ticket[];
+let tickets: Ticket[] = [];
 
 // Set up WebSocket connection to server
 const ws = new WebSocket('ws://localhost:8080/ws');
@@ -42,8 +41,12 @@ const setClientId = (clientId: string) => {
   }));
 }
 
-const interact = () => {
-  rl.question("Nummer eingeben zur Selbstzuweisung, 'q' zum Beenden", input => {
+const interact = (clientId: string) => {
+  console.log(`\nClient: ${clientId}`)
+
+  displayTickets();
+
+  rl.question("Nummer eingeben zur Selbstzuweisung, 'q' zum Beenden\n", input => {
     if (input === 'q') {
       ws.close();
       rl.close();
@@ -55,10 +58,10 @@ const interact = () => {
     if (isNaN(ticketId)) {
       console.log("Bitte eine Nummer eingeben. Versuchen Sie nochmal.")
     } else if (ticketIsValid(ticketId)) {
-      assignTicket(ticketId);
+      assignTicket(ticketId, clientId);
     }
 
-    interact();
+    interact(clientId);
   })
 }
 
@@ -78,7 +81,7 @@ const ticketIsValid = (ticketId: number): boolean => {
   return false;
 }
 
-const assignTicket = (ticketId: number) => {
+const assignTicket = (ticketId: number, clientId: string) => {
   ws.send(JSON.stringify({
     message_type: "assign_ticket",
     ticket_id: ticketId,
