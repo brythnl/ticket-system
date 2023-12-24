@@ -19,25 +19,24 @@ const ws = new WebSocket('ws://localhost:8080/ws');
 ws.on('open', () => {
   console.log('Client gestartet');
 
-  // Prompt and set client ID
+  // Prompt for client ID
   rl.question("Client-ID eingeben: ", clientId => {
-    setClientId(clientId);
-  })
+    sendClientId(clientId);
 
-  // Receive and display data (list of all ticket information) from server
-  ws.on('message', message => {
-    const data = JSON.parse(message.toString());
-    tickets = data;
-    displayTickets();
-  })
+    interact(clientId);
+  });
+});
 
-  interact();
+// Receive data (list of all ticket information) from server
+ws.on('message', message => {
+  const data = JSON.parse(message.toString());
+  tickets = data.tickets;
 })
 
-const setClientId = (clientId: string) => {
+const sendClientId = (clientId: string) => {
   ws.send(JSON.stringify({
     message_type: "set_client_id",
-    client_id: "clientId"
+    client_id: clientId
   }));
 }
 
@@ -68,7 +67,7 @@ const interact = (clientId: string) => {
 const ticketIsValid = (ticketId: number): boolean => {
   for (const ticket of tickets) {
     if (ticket.id === ticketId) {
-      if (ticket.clientId === undefined) {
+      if (ticket.clientId === "") {
         return true;
       } else {
         console.log(`Ticket mit der ID: ${ticketId} ist schon zugewiesen.`)
@@ -94,7 +93,7 @@ const displayTickets = () => {
     console.log("Keine Tickets");
   } else {
     for (const ticket of tickets) {
-      console.log(`Ticket ID: ${ticket.id}, zugewiesen von: ${ticket.clientId}\n`)
+      console.log(`Ticket ID: ${ticket.id}, zugewiesen von: ${ticket.clientId}`)
     }
   }
 }
