@@ -33,17 +33,87 @@ var (
 )
 
 func main() {
+	go broadcast_ticket_updates()
+	go interact()
+
 	http.HandleFunc("/ws", ws)
 
-	// Display Tickets
-	// Set option for new ticket (create_ticket) or quit
 	fmt.Println("Server gestartet")
 	http.ListenAndServe(":8080", nil)
 }
 
-func ws(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, Go Server")
+func interact() {
+	scanner := bufio.NewScanner(os.Stdin)
+	for {
+		display_tickets()
+		fmt.Println("n: neues Ticket, q: quit")
 
+		if scanner.Scan() {
+			input := scanner.Text()
+
+			switch input {
+			case "n":
+				create_ticket()
+			case "q":
+				fmt.Println("Server beendet")
+				os.Exit(0)
+			default:
+				fmt.Println("Ungültige Eingabe")
+			}
+		}
+	}
+}
+
+func display_tickets() {
+	if len(tickets) == 0 {
+		fmt.Println("Keine Tickets")
+		return
+	}
+
+	for _, ticket := range tickets {
+		fmt.Printf("Ticket ID: %d, zugewiesen von: %s\n", ticket.Id, ticket.ClientId)
+	}
+}
+
+func broadcast_ticket_updates() {
+	for {
+		new_tickets := <-ticket_update_channel
+		// Broadcast updated ticket information to all connected clients
+		for client := range clients {
+			if err := client.WriteJSON(struct {
+				MessageType string   `json:"message_type"`
+				Tickets     []Ticket `json:"tickets"`
+			}{
+				MessageType: "ticket_info",
+				Tickets:     new_tickets,
+			}); err != nil {
+				fmt.Println(err)
+			}
+		}
+	}
+	// for new_tickets := range ticket_update_channel {
+	// 	// Broadcast updated ticket information to all connected clients
+	// 	for client := range clients {
+	// 		if err := client.WriteJSON(new_tickets); err != nil {
+	// 			fmt.Println(err)
+	// 		}
+	// 	}
+	// }
+}
+
+func create_ticket() {
+	new_ticket := Ticket{
+		Id:       next_ticket_id,
+		ClientId: "",
+	}
+
+	tickets = append(tickets, new_ticket)
+	next_ticket_id++
+
+	ticket_update_channel <- tickets
+}
+
+func ws(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
