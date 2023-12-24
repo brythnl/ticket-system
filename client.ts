@@ -64,6 +64,7 @@ const assignTicket = (ticketId: number) => {
   ws.send(JSON.stringify({
     message_type: "assign_ticket",
     ticket_id: ticketId,
+    client_id: clientId
   }))
 }
 
