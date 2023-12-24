@@ -11,10 +11,8 @@ interface Ticket {
   clientId: string;
 }
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-})
+let clientId: string;
+let tickets: Ticket[];
 
 // Set up WebSocket connection to server
 const ws = new WebSocket('ws://localhost:8080/ws');
