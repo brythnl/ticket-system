@@ -27,9 +27,18 @@ var (
 	tickets []Ticket
 	// Channel to share ticket updates
 	ticket_update_channel = make(chan []Ticket)
-	// Initialize ticket ID
+	// Ticket ID counter
 	next_ticket_id = 1
 )
+
+func main() {
+	http.HandleFunc("/ws", ws)
+
+	// Display Tickets
+	// Set option for new ticket (create_ticket) or quit
+	fmt.Println("Server gestartet")
+	http.ListenAndServe(":8080", nil)
+}
 
 func ws(w http.ResponseWriter, r *http.Request) {
   fmt.Fprintf(w, "Hello, Go Server")
