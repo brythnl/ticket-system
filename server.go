@@ -119,7 +119,15 @@ func ws(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	defer conn.Close()
+
+	// Send (initial) current tickets to client
+	conn.WriteJSON(struct {
+		MessageType string   `json:"message_type"`
+		Tickets     []Ticket `json:"tickets"`
+	}{
+		MessageType: "ticket_info",
+		Tickets:     tickets,
+	})
 
 	go read_client_messages(conn)
 }
