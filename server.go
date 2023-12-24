@@ -41,14 +41,16 @@ func main() {
 }
 
 func ws(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintf(w, "Hello, Go Server")
+	fmt.Fprintf(w, "Hello, Go Server")
 
-  conn, err := upgrader.Upgrade(w, r, nil)
-  if err != nil {
-    log.Println(err)
-    return
-  }
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer conn.Close()
 
+	go read_client_messages(conn)
 }
 
 func main() {
