@@ -1,12 +1,19 @@
 package main
 
 import (
-  "fmt"
-  "net/http"
-  "log"
+	"fmt"
+	"net/http"
+	// "encoding/json"
+	"log"
 
-  "github.com/gorilla/websocket"
+	"github.com/gorilla/websocket"
 )
+
+// Represents a simulated ticket in the system
+type Ticket struct {
+	Id       int    `json:"id"`
+	ClientId string `json:"clientId"`
+}
 
 var (
   upgrader = websocket.Upgrader{
