@@ -1,6 +1,11 @@
 import * as readline from 'readline'
 import WebSocket from 'ws';
 
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+})
+
 interface Ticket {
   id: number;
   clientId: string;
