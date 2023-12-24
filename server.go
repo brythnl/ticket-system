@@ -132,9 +132,46 @@ func ws(w http.ResponseWriter, r *http.Request) {
 	go read_client_messages(conn)
 }
 
-func main() {
-  http.HandleFunc("/ws", ws)
-  http.ListenAndServe(":8080", nil)
+func read_client_messages(conn *websocket.Conn) {
+	for {
+		var message map[string]interface{}
+
+		if err := conn.ReadJSON(&message); err != nil {
+			log.Println(err)
+			// Remove faulty connection (client)
+			delete(clients, conn)
+			break
+		}
+
+		handle_message(message, conn)
+	}
 }
 
+func handle_message(message map[string]interface{}, conn *websocket.Conn) {
+	message_type, ok := message["message_type"].(string)
+	if !ok {
+		fmt.Println("Ungültiges message_type")
+		return
+	}
 
+	switch message_type {
+	case "set_client_id":
+		// Store connected client
+		clients[conn] = message["client_id"].(string)
+	case "assign_ticket":
+		assign_ticket(message)
+	}
+}
+
+func assign_ticket(message map[string]interface{}) {
+	ticket_id := message["ticket_id"].(float64)
+	client_id := message["client_id"].(string)
+
+	for i := range tickets {
+		if tickets[i].Id == int(ticket_id) && tickets[i].ClientId == "" {
+			tickets[i].ClientId = client_id
+		}
+	}
+
+	ticket_update_channel <- tickets
+}
