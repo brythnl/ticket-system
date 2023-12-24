@@ -25,7 +25,7 @@ var (
 	// Store key-value pairs of WebSocket connection and the respective connected client
 	clients = make(map[*websocket.Conn]string)
 	// List of Tickets (ticket information)
-	tickets []Ticket
+	tickets = make([]Ticket, 0)
 	// Channel to share ticket updates
 	ticket_update_channel = make(chan []Ticket)
 	// Ticket ID counter
