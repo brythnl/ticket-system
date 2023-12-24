@@ -67,7 +67,7 @@ const assignTicket = (ticketId: number) => {
   }))
 }
 
-const displayTickets = (tickets: Ticket[]) => {
+const displayTickets = () => {
   if (tickets.length === 0) {
     console.log("Keine Tickets");
   } else {
