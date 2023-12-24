@@ -44,20 +44,38 @@ const setClientId = (clientId: string) => {
 
 const interact = () => {
   rl.question("Nummer eingeben zur Selbstzuweisung, 'q' zum Beenden", input => {
-    const ticketId = parseInt(input);
-
-    if (typeof ticketId === "number") {
-      assignTicket(ticketId);
-      interact();
-    } else if (input === 'q') {
+    if (input === 'q') {
       ws.close();
       rl.close();
       process.exit();
-    } else {
-      console.log("Ungültige Eingabe. Versuchen Sie nochmal.");
-      interact();
     }
+
+    const ticketId = parseInt(input);
+
+    if (isNaN(ticketId)) {
+      console.log("Bitte eine Nummer eingeben. Versuchen Sie nochmal.")
+    } else if (ticketIsValid(ticketId)) {
+      assignTicket(ticketId);
+    }
+
+    interact();
   })
+}
+
+const ticketIsValid = (ticketId: number): boolean => {
+  for (const ticket of tickets) {
+    if (ticket.id === ticketId) {
+      if (ticket.clientId === undefined) {
+        return true;
+      } else {
+        console.log(`Ticket mit der ID: ${ticketId} ist schon zugewiesen.`)
+        return false;
+      }
+    }
+  }
+
+  console.log(`Ticket mit der ID: ${ticketId} ist nicht gefunden.`)
+  return false;
 }
 
 const assignTicket = (ticketId: number) => {
