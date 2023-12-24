@@ -16,10 +16,19 @@ type Ticket struct {
 }
 
 var (
-  upgrader = websocket.Upgrader{
-    ReadBufferSize: 1024,
-    WriteBufferSize: 1024,
-  }
+	upgrader = websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+	}
+
+	// Store key-value pairs of WebSocket connection and the respective connected client
+	clients = make(map[*websocket.Conn]string)
+	// List of Tickets (ticket information)
+	tickets []Ticket
+	// Channel to share ticket updates
+	ticket_update_channel = make(chan []Ticket)
+	// Initialize ticket ID
+	next_ticket_id = 1
 )
 
 func ws(w http.ResponseWriter, r *http.Request) {
