@@ -1,10 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"net/http"
-	// "encoding/json"
 	"log"
+	"net/http"
+	"os"
 
 	"github.com/gorilla/websocket"
 )
