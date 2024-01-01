@@ -81,14 +81,10 @@ func display_tickets() {
 }
 
 func broadcast_ticket_updates() {
-	for {
-		new_tickets := <-ticket_update_channel
+	for new_tickets := range ticket_update_channel {
 		// Broadcast updated ticket information to all connected clients
 		for client := range clients {
-			if err := client.WriteJSON(struct {
-				MessageType string   `json:"message_type"`
-				Tickets     []Ticket `json:"tickets"`
-			}{
+			if err := client.WriteJSON(TicketInfoMessage{
 				MessageType: "ticket_info",
 				Tickets:     new_tickets,
 			}); err != nil {
@@ -96,14 +92,6 @@ func broadcast_ticket_updates() {
 			}
 		}
 	}
-	// for new_tickets := range ticket_update_channel {
-	// 	// Broadcast updated ticket information to all connected clients
-	// 	for client := range clients {
-	// 		if err := client.WriteJSON(new_tickets); err != nil {
-	// 			fmt.Println(err)
-	// 		}
-	// 	}
-	// }
 }
 
 func create_ticket() {
