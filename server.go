@@ -114,10 +114,7 @@ func ws(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Send (initial) current tickets to client
-	conn.WriteJSON(struct {
-		MessageType string   `json:"message_type"`
-		Tickets     []Ticket `json:"tickets"`
-	}{
+	conn.WriteJSON(TicketInfoMessage{
 		MessageType: "ticket_info",
 		Tickets:     tickets,
 	})
