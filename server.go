@@ -147,15 +147,27 @@ func handle_message(message map[string]interface{}, conn *websocket.Conn) {
 	switch message_type {
 	case "set_client_id":
 		// Store connected client
-		clients[conn] = message["client_id"].(string)
+		clients[conn], ok = message["client_id"].(string)
+		if !ok {
+			fmt.Println("Ungültiges client_id")
+			return
+		}
 	case "assign_ticket":
 		assign_ticket(message)
 	}
 }
 
 func assign_ticket(message map[string]interface{}) {
-	ticket_id := message["ticket_id"].(float64)
-	client_id := message["client_id"].(string)
+	ticket_id, ok := message["ticket_id"].(float64)
+	if !ok {
+		fmt.Println("Ungültiges ticket_id")
+		return
+	}
+	client_id, ok := message["client_id"].(string)
+	if !ok {
+		fmt.Println("Ungültiges client_id")
+		return
+	}
 
 	for i := range tickets {
 		if tickets[i].Id == int(ticket_id) && tickets[i].ClientId == "" {
