@@ -16,6 +16,11 @@ type Ticket struct {
 	ClientId string `json:"clientId"`
 }
 
+type TicketInfoMessage struct {
+	MessageType string   `json:"message_type"`
+	Tickets     []Ticket `json:"tickets"`
+}
+
 var (
 	upgrader = websocket.Upgrader{
 		ReadBufferSize:  1024,
