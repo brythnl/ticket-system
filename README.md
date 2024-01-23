@@ -12,3 +12,15 @@ The server is written in Go. It can handle multiple clients and serves these fun
 The client is written in TypeScript. It runs in Node and serves these functions:
 - Assigns itself into an existing ticket of choice
 - Sends updates back to the server
+
+## Simulation
+To test/simulate this yourself, ensure you have Node and Go installed.
+- To run the server:
+```go
+go run server.go
+```
+- To start a client (this example uses npm, adjust accordingly):
+```ts
+npx ts-node client.ts
+```
+To start another client, run the same command in another window.
