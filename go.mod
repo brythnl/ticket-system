@@ -1,4 +1,4 @@
-module github.com/brythnl/ticket-system
+module github.com/brythnl/ticketSim
 
 go 1.21.4
 
